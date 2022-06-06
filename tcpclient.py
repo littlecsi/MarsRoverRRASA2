@@ -2,7 +2,7 @@ import socket
 print("We're in tcp client...");
 
 #the server name and port client wishes to access
-server_name = '52.91.219.135'
+server_name = '184.72.142.251'
 
 #'52.205.252.164'
 server_port = 12000
