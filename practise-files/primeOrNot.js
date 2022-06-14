@@ -1,4 +1,4 @@
-function primeOrNot(){
+/*function primeOrNot(){
     let num = Math.floor(document.getElementById("num1").value);
     let response="The number is a prime";
     if(num<2){
@@ -13,5 +13,9 @@ function primeOrNot(){
         }
     }
     document.getElementById("response").innerHTML=response;
+
+}
+*/
+function getstarted(){
 
 }
