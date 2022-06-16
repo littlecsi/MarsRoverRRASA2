@@ -31,13 +31,12 @@ function sendcontrol(){
         const responseContent = "<p>sent</p>";
     
         fileSystem.readFile('/home/ubuntu/command.html', 'utf8', function(err,data){
-        if(err){
-            console.error(err);
-        return;
-        }
-        return data;
-        });
-    
+            if(err){
+                console.error(err);
+                return;
+            }
+            return data;
+            });
         const htmlContent = fileSystem.readFileSync('/home/ubuntu/command.html', 'utf8');
         let htmlTree = htmlParser.parse(htmlContent);
         htmlTree.getElementById("controldata").insertAdjacentHTML("afterend",responseContent);
