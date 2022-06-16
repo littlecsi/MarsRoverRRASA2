@@ -4,6 +4,19 @@ var server = express();
 server.get('/', function(req, res) {
     res.sendFile('/home/ubuntu/home.html');
 });
+server.get('/command.html', function(req, res) {
+    res.sendFile('/home/ubuntu/command.html');
+});
+server.get('/about.html', function(req, res) {
+    res.sendFile('/home/ubuntu/about.html');
+});
+server.get('/battery.html', function(req, res) {
+    res.sendFile('/home/ubuntu/battery.html');
+});
+server.get('/about.html', function(req, res) {
+    res.sendFile('/home/ubuntu/about.html');
+});
+
 
 server.get('/direction.js', function(req, res) {
     res.sendFile('/home/ubuntu/direction.js');

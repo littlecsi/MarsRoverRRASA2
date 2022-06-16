@@ -8,8 +8,20 @@
         <button type="button" onclick="home()">Home</button>
         <button type="button" onclick="command()">Command</button>
         <button type="button" onclick="battery()" >Battery</button>
-        <button type="button" onclick="about()" >About</button>
+        <button type="button" onclick="about()" >About</button><br>
 
-        <script type="text/javascript" src="direction.js"></script>
+        <h2>Manual Control</h2><br>
+
+        <form id="controldata">
+            <!-- this is a comment: br tag is for line break-->
+            <label for="degree">Angle (in degrees) :</label><br>
+            <input type="number" id="degree" name="degree"><br>
+            <label for="distance">Distance (in mm) :</label><br>
+            <input type="number" id="distance" name="distance"><br><br>
+            <input type="button" value="Submit" onclick="sendcontrol()"><br>
+        </form>
+        <p id="response"></p>
+        <script type="text/javascript" src="direction.js"></script><br>
+
     </body>
 </html>

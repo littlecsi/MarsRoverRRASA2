@@ -1,23 +1,43 @@
+var express = require('express');
+var server = express();
 
 function getstarted(){
     window.location.href ='command.html';
-    console.log("pressed getstarted")
 }
 function home(){
-    window.location.href ='home.html';
-    console.log("pressed home")
+    window.location.href ='/';
 }
 function command(){
-    //res.sendFile('/home/ubuntu/command.html');
     window.location.href ='command.html';
-    console.log("pressed command")
 }
+
 function battery(){
     window.location.href ='battery.html';
-    console.log("pressed battery")
 }
 
 function about(){
     window.location.href ='about.html';
-    console.log("pressed about")
+}
+
+function sendcontrol(){
+    server.post('/controldata', function(req, res) {
+    //formData is a JavaScript object
+        const formData = req.body;
+        const responseContent = "<p>sent</p>";
+    
+        /*fileSystem.readFile('/Users/sbaig/index.html', 'utf8', function(err,data){
+        if(err){
+            console.error(err);
+        return;
+        }
+        return data;
+        });*/
+    
+        const htmlContent = fileSystem.readFileSync('/home/ubuntu/command.html', 'utf8');
+        let htmlTree = htmlParser.parse(htmlContent);
+        htmlTree.getElementById("controldata").insertAdjacentHTML("afterend",responseContent);
+        res.writeHead(200, {'Content-Type':'text/html'});
+        res.end(htmlTree.toString());
+    });
+        
 }
