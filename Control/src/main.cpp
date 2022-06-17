@@ -209,7 +209,7 @@ void loop() {
         char Commandchar = client.read();
 
         if (Commandchar != ']') {
-          Command[i]] = Commandchar;
+          Command[i] = Commandchar;
           i++;
         } else {
           Command[i] = ']';
