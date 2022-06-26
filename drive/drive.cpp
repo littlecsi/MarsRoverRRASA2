@@ -1,4 +1,4 @@
-gti#include <Arduino.h>
+#include <Arduino.h>
 #include "SPI.h"
 
 // these pins may be different on different boards
@@ -113,7 +113,6 @@ Robojax_L298N_DC_motor robot(IN1, IN2, ENA, CHA,  IN3, IN4, ENB, CHB);
 
 
 
-int kiril=2;
 int argument = 0;
 
 int total_x = 0;
@@ -301,22 +300,22 @@ byte frame[ADNS3080_PIXELS_X * ADNS3080_PIXELS_Y];
 
 
 float clockwise(int speed, int argument){
-  robot.rotate(motor1, speed, CW);    //As with forward the speed is set to a given value
-  robot.rotate(motor2, speed, CCW);
+  robot.rotate(motor1, speed, CW);    //for clockwise rotation, one motor will rotate clockwise
+  robot.rotate(motor2, speed, CCW);   //and one will rotate anti clockwise
   
 
   float traveled = 0;
-  float r = 13.7;  //define a variable for distance travelled
-  
-  int x1;
+  float r = 13.7;  //this is a variable for the radium of the hypothetical circle that the rover
+                   //will traverse, from the midpoint of the axis from one wheel to the other
+  int x1;          //to the centre of the optical sensor.
   int y1;
 
   int x;
   int y;
 
   
-  float arclength = ((argument*M_PI/180)*r);
-
+  float arclength = ((argument*M_PI/180)*r); //calculating the arc that the rover will traverse 
+                                             //based on desired turning angle
   
   
   while(traveled < arclength){        //stay in loop until the target distance has
@@ -326,7 +325,7 @@ float clockwise(int speed, int argument){
   delay(100);
 
    
-  int val = mousecam_read_reg(ADNS3080_PIXEL_SUM);
+  int val = mousecam_read_reg(ADNS3080_PIXEL_SUM);  //checking image quality
   MD md;
   mousecam_read_motion(&md);
   for(int i=0; i<md.squal/4; i++)
@@ -363,7 +362,7 @@ float clockwise(int speed, int argument){
     
 
     traveled = sqrt(y*y + x*x); //update distance traveled
-    float argument = (traveled / 2*M_PI*r)*180;
+    float argument = (traveled / 2*M_PI*r)*180; //return actual distance traveled 
     
     
   }
@@ -463,7 +462,7 @@ float forward (int speed) {
     robot.rotate(motor1, speed, CW); //set motors to specified speed and forward direction
     robot.rotate(motor2, speed, CW); // //the input is the total distance, thus the target is the 
                                      //current value of y + the desired distance
-            //stay inside the loop until the target is reached
+           
     int y=0;
     int x=0;
     int x1=0;
@@ -528,9 +527,8 @@ float forward (int speed) {
 
 float backward (int speed) {
     robot.rotate(motor1, speed, CCW); //set motors to specified speed and forward direction
-    robot.rotate(motor2, speed, CCW); // //the input is the total distance, thus the target is the 
-                                     //current value of y + the desired distance
-            //stay inside the loop until the target is reached
+    robot.rotate(motor2, speed, CCW); 
+                                     
     int y=0;
     int x=0;
     int x1=0;
@@ -581,9 +579,7 @@ float backward (int speed) {
     
       
    } //exit the loop 
-      robot.brake(motor1);
-      robot.brake(motor2);
-      return sqrt(x*x + y*y);
+      
     
 }
 
@@ -601,6 +597,10 @@ bool checkBrake(int d){   //this will need to be implemented depenending
 
 
 
+
+
+
+
 void loop()
 {
  
@@ -611,8 +611,8 @@ void loop()
   delay(500);
 
   
-  
-  if (order.type == "forward"{
+  //calculating coordinates, order types implemented in control.
+  if (order.type == "forward"){
     float d = forward(order.speed)
     co_x = co_x + d*sin(argument);
     co_y = co_y + d*cos(argument);
