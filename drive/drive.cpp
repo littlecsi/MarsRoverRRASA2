@@ -1,4 +1,4 @@
-gti#include <Arduino.h>
+#include <Arduino.h>
 #include "SPI.h"
 
 // these pins may be different on different boards
