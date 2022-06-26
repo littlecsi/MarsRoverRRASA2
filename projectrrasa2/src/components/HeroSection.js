@@ -1,15 +1,15 @@
 import React from 'react';
 import '../App.css';
 import { Button } from './Button';
-import './maindisplay.css';
+import './HeroSection.css';
 
-function MainDisplay() {
+function HeroSection() {
   return (
-    <div className='maindisplay'>
-      <video src='/videos/backgroundvideo.mp4' autoPlay loop muted />
+    <div className='hero-container'>
+      <video src='../../public/videos/backgroundvideo2.mp4' autoPlay loop muted />
       <h1>ADVENTURE AWAITS</h1>
       <p>What are you waiting for?</p>
-      <div className='display-btns'>
+      <div className='hero-btns'>
         <Button
           className='btns'
           buttonStyle='btn--outline'
@@ -30,4 +30,4 @@ function MainDisplay() {
   );
 }
 
-export default MainDisplay;
+export default HeroSection;

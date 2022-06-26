@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react'
 import { Link } from 'react-router-dom';
-import { Button } from './Button';
 import './Navbar.css';
 
 
@@ -30,7 +29,7 @@ window.addEventListener('resize',showButton);
     <>  
         <nav className="navbar">
             <Link to='/' className='navbar-logo' onClick={closeMobileMenu}>
-                RRASA2
+                RRASA2 
                 <i class="fa-solid fa-satellite"></i>            
             </Link>
             <div className ="navbar-conntainer"> 
@@ -59,7 +58,6 @@ window.addEventListener('resize',showButton);
                         </Link>
                     </li>
                 </ul>
-                {button && <Button buttonStyle='btn--outline'>GET STARTED</Button>}
             </div>
         </nav>
     </>
