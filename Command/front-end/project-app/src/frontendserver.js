@@ -128,21 +128,21 @@ io.on('connection', (socket) => {
     socket.on('Angle', data => {
         console.log("Angle from Manual Driving : %s", data);
         if(esp32 !== "undefined") {
-            esp32.write(data);
+            esp32.write("ANG" + data);
         }
         socket.emit('Angle', data);
     });
     socket.on('Distance', data => {
         console.log("Distance from Manual Driving : %s", data);
         if(esp32 !== "undefined") {
-            esp32.write(data);
+            esp32.write("DIS" + data);
         }
         socket.emit('Distance', data);
     });
     socket.on('Speed', data => {
         console.log("Speed from Manual Driving : %s", data);
         if(esp32 !== "undefined") {
-            esp32.write(data);
+            esp32.write("SPE" + data);
         }
         socket.emit('Speed', data);
     });
