@@ -37,10 +37,10 @@ const int CW  = 1; // do not change
 // for two motors without debug information // Watch video https://youtu.be/2JTMqURJTwg
 Robojax_L298N_DC_motor robot(IN1, IN2, ENA, CHA,  IN3, IN4, ENB, CHB);
 
-#define PIN_SS        5  //7
-#define PIN_MISO      19 //5
-#define PIN_MOSI      23  //2
-#define PIN_SCK       18  //6
+#define PIN_SS        5   // D7
+#define PIN_MISO      19  // D5
+#define PIN_MOSI      23  // D2
+#define PIN_SCK       18  // D6
 
 #define PIN_MOUSECAM_RESET     35
 #define PIN_MOUSECAM_CS        5
@@ -374,14 +374,14 @@ float clockwise(int speed, int argument) {
     int val = mousecam_read_reg(ADNS3080_PIXEL_SUM);
     MD md;
     mousecam_read_motion(&md);
-    for(int i=0; i<md.squal/4; i++)
-      Serial.print('*');
-    Serial.print(' ');
-    Serial.print((val*100)/351);
-    Serial.print(' ');
-    Serial.print(md.shutter); Serial.print(" (");
-    Serial.print((int)md.dx); Serial.print(',');
-    Serial.print((int)md.dy); Serial.println(')');
+    // for(int i=0; i<md.squal/4; i++)
+    //   Serial.print('*');
+    // Serial.print(' ');
+    // Serial.print((val*100)/351);
+    // Serial.print(' ');
+    // Serial.print(md.shutter); Serial.print(" (");
+    // Serial.print((int)md.dx); Serial.print(',');
+    // Serial.print((int)md.dy); Serial.println(')');
 
     // Serial.println(md.max_pix);
     delay(50);
@@ -395,19 +395,18 @@ float clockwise(int speed, int argument) {
     x = x1/157;
     y = y1/157;
     
-    Serial.print('\n');
+    // Serial.print('\n');
     
-    Serial.println("Distance_x = " + String(total_x));
+    // Serial.println("Distance_x = " + String(total_x));
     
-    Serial.println("Distance_y = " + String(total_y));
-    Serial.print('\n');
+    // Serial.println("Distance_y = " + String(total_y));
+    // Serial.print('\n');
     
     traveled = sqrt(y*y + x*x); //update distance travelled
     float argument = (traveled / 2*M_PI*r)*360;
   }
 
-  robot.brake(1); //stop the motors
-  robot.brake(2);
+  stop();
 
   return argument;
 }
@@ -434,14 +433,14 @@ float anticlockwise(int speed, int argument) {
     int val = mousecam_read_reg(ADNS3080_PIXEL_SUM);
     MD md;
     mousecam_read_motion(&md);
-    for(int i=0; i<md.squal/4; i++)
-      Serial.print('*');
-    Serial.print(' ');
-    Serial.print((val*100)/351);
-    Serial.print(' ');
-    Serial.print(md.shutter); Serial.print(" (");
-    Serial.print((int)md.dx); Serial.print(',');
-    Serial.print((int)md.dy); Serial.println(')');
+    // for(int i=0; i<md.squal/4; i++)
+    //   Serial.print('*');
+    // Serial.print(' ');
+    // Serial.print((val*100)/351);
+    // Serial.print(' ');
+    // Serial.print(md.shutter); Serial.print(" (");
+    // Serial.print((int)md.dx); Serial.print(',');
+    // Serial.print((int)md.dy); Serial.println(')');
 
     // Serial.println(md.max_pix);
     delay(50);
@@ -455,44 +454,43 @@ float anticlockwise(int speed, int argument) {
     x = x1/157;
     y = y1/157;
     
-    Serial.print('\n');
+    // Serial.print('\n');
     
-    Serial.println("Distance_x = " + String(total_x));
+    // Serial.println("Distance_x = " + String(total_x));
     
-    Serial.println("Distance_y = " + String(total_y));
-    Serial.print('\n');
+    // Serial.println("Distance_y = " + String(total_y));
+    // Serial.print('\n');
 
     traveled = sqrt(y*y + x*x); //update distance traveled
     float argument = (traveled / 2*M_PI*r)*360;
   }
 
-  robot.brake(1); //stop the motors
-  robot.brake(2);
+  stop();
 
   return argument;
 }
 
 
 void forward (int speed) {
-  robot.rotate(motor1, speed, CW); //set motors to specified speed and forward direction
-  robot.rotate(motor2, speed, CW); // //the input is the total distance, thus the target is the 
-                                    //current value of y + the desired distance
-          //stay inside the loop until the target is reached
-  } //exit the loop 
-
-
-
-
-float backward (int speed) {
-  robot.rotate(motor1, speed, CCW); //set motors to specified speed and forward direction
-  robot.rotate(motor2, speed, CCW); // //the input is the total distance, thus the target is the 
-                                    //current value of y + the desired distance
-  
+  robot.rotate(motor1, speed, CW);  // set motors to specified speed and forward direction
+  robot.rotate(motor2, speed, CW);  // the input is the total distance, thus the target is the 
+                                    // current value of y + the desired distance
+                                    // stay inside the loop until the target is reached
 }
 
 
+void backward (int speed) {
+  robot.rotate(motor1, speed, CCW); // set motors to specified speed and forward direction
+  robot.rotate(motor2, speed, CCW); // the input is the total distance, thus the target is the 
+                                    // current value of y + the desired distance
+}
 
 
+void stop () {
+  robot.brake(1);
+  robot.brake(2);
+  direction = 0;
+}
 
 
 point optical_sensor(float x1, float y1) {
@@ -501,14 +499,14 @@ point optical_sensor(float x1, float y1) {
     int val = mousecam_read_reg(ADNS3080_PIXEL_SUM);
     MD md;
     mousecam_read_motion(&md);
-    for(int i=0; i<md.squal/4; i++)
-      Serial.print('*');
-    Serial.print(' ');
-    Serial.print((val*100)/351);
-    Serial.print(' ');
-    Serial.print(md.shutter); Serial.print(" (");
-    Serial.print((int)md.dx); Serial.print(',');
-    Serial.print((int)md.dy); Serial.println(')');
+    // for(int i=0; i<md.squal/4; i++)
+    //   Serial.print('*');
+    // Serial.print(' ');
+    // Serial.print((val*100)/351);
+    // Serial.print(' ');
+    // Serial.print(md.shutter); Serial.print(" (");
+    // Serial.print((int)md.dx); Serial.print(',');
+    // Serial.print((int)md.dy); Serial.println(')');
   
     distance_x = md.dx; //convTwosComp(md.dx);
     distance_y = md.dy; //convTwosComp(md.dy);
@@ -525,58 +523,50 @@ point optical_sensor(float x1, float y1) {
     return coordinates;
 }
 
+point position;
+
+int direction = 0;  // 1 = forward; 2 = backward; 3 = CW; 4 = CCW
+                      // if not moving set direction to 0 always!!
+                      // ie. just set direction to 0 everytime you brake
 
 /* wall checker integer meanings:
+1 is wall north - LEFT
+2 is wall east - LEFT
+3 is wall south 
+4 is wall west - RIGHT
 
-- 1 is wall north
-- 2 is wall east
-- 3 is wall south
-- 4 is wall west
-
-- 5 is north/east
-- 6 is east/south
-- 7 is south/west
-- 8 is north/west
+5 is north/east - LEFT
+6 is east/south - LEFT
+7 is south/west - RIGHT
+8 is north/west - RIGHT
 
 length 21 cm
 width  19 cm
-
 */
-int wall_checker(float x, float y){
-  if (x < 120){
-   
-    if(y<120){
+int wall_checker(float x, float y) { 
+  if (x < 120) {
+    if (y < 120) {
       return 7;
-
     }
-    else if(y>3435){
+    else if (y > 3435) {
       return 8;
-    }
-    else{
+    } else {
       return 4;
     }
-
-  }
-  else if (x>3207){
-    if(y<120){
+  } else if (x > 3207) {
+    if (y < 120) {
       return 6;
-    }
-    else if(y>3435){
+    } else if (y > 3435) {
       return 5;
-    }
-    else{
+    } else {
       return 2;
     }
-  }
-    
-  else if (y > 3435){
+  } else if (y > 3435) {
     return 1;
+  } else {
+    return 3;
   }
-  else return 3;
 }
-
-
-
 
 
 void loop() {
@@ -599,7 +589,7 @@ void loop() {
       VisionMsg[i] = ' ';
 
     // Read data on the UART Vision datastream
-    for (int i=0; i<32; i++)
+    for (int i = 0; i < 32; i++)
       VisionMsg[i] = Serial1.read();
 
     Serial.println("The message from Vision has been recorded.");
@@ -644,78 +634,74 @@ void loop() {
   */
 
 
-//optical sensor reading 
-//current coordinates determine if near wall
-//return where wall integer
+  // optical sensor reading 
+  // current coordinates determine if near wall
+  // return where wall integer
 
-    point position;
-
-    int direction = 0; //1 = forward; 2 = backward; 3 = CW; 4 = CCW
-                       //if not moving set direction to 0 always!!
-                       //ie. just set direction to 0 everytime you brake
-    if(direction == 1){
-      forward(80);
-    }
-    else if(direction == -1){
-      backward(80);
-    }
-    else if(direction == 2){
-      argument = clockwise(60, 90);
-      direction = 0;
-    }
-    else if(direction == -2){
-      argument = -1 * anticlockwise(60, 90);
-      direction = 0;
-    }
-
-  
-
-    if (direction == 1 || direction == -1){
-      position = optical_sensor(position.x, position.y);
-      float movement = direction * (position.x*position.x + position.y*position.y);
-      co_x = co_x + movement * cos(argument);
-      co_y = co_y + movement * sin(argument);
-    }
-
-    else if (direction == 0){
-      position.x = 0;
-      position.y = 0;
-    }
-
-    
-    
-
-
-
+  if (direction==1) {
+    position = optical_sensor(position.x, position.y);
+    float movement = direction * (position.x*position.x + position.y*position.y);
+    co_x = co_x + movement * cos(argument);
+    co_y = co_y + movement * sin(argument);
+  } 
+  else if (direction==0) {
+    position.x = 0;
+    position.y = 0;
+  }
 
   // Decision Making based on the Vision DataStream - while on autonomous mode
-  if (VisionMsg[0] == 1 & autonomous) {
-    // TODO: Send Detection data to the server.
-    
-    // Converting binary-form x_coordinate data stored in a character array to integer
-    std::string xcoord_bin = "";
+  if (VisionMsg[0]==1 & autonomous) {
     std::string area_bin = "";
-    
-    for (int i = 4; i < 15; i++) 
-      xcoord_bin += std::to_string(VisionMsg[i]);
-    
+
     for (int i = 16; i < 32; i++)
-      area_bin += std::to_string(VisionMsg[i]);
-    
-    int xcoord = std::stoi(xcoord_bin, 0, 2);
+      area_bin += std::to_string(VisionMsg[i]);    
     int area = std::stoi(area_bin, 0, 2);
 
-    if (area > 1000) { // TODO: If the area is bigger than a certain threshold 
+    if (area > 42840) { // If the area is bigger than a certain threshold
+      std::string obj_bin = "";
+      std::string xcoord_bin = "";
 
-      if (xcoord > 320) { // If the alien is found on the right, TURN LEFT
-        // Turn the rover left
-        anticlockwise(60, 90);
+      for (int i = 1; i < 3; i++)
+        obj_bin += std::to_string(VisionMsg[i]);
+      for (int i = 4; i < 15; i++) 
+        xcoord_bin += std::to_string(VisionMsg[i]);
 
-      } else { // If the alien is found on the right, TURN RIGHT
-        // Turn the rover right
-        clockwise(60, 90);
-
+      int obj = std::stoi(obj_bin, 0, 2);
+      int xcoord = std::stoi(xcoord_bin, 0, 2);
+      
+      switch (obj) { // TODO: send data accordingly.
+        case 0: // RED
+          break;
+        case 1: // YELLOW
+          break;
+        case 2: // MAGENTA
+          break;
+        case 3: // TEAL
+          break;
+        case 4: // LIME
+          break;
+        case 5: // NAVY
+          break;
+        case 6: // building
+          break;
+        
+        default:
+          break;
       }
+      if (xcoord > 320) { // If the alien is found on the right, TURN LEFT
+        anticlockwise(60, 90);
+      } else { // If the alien is found on the right, TURN RIGHT
+        clockwise(60, 90);
+      }
+    }
+
+    int wall = wall_checker(co_x, co_y);
+    
+    if (wall==1 | wall==2 | wall==5 | wall==6) {
+      anticlockwise(60, 90);
+    }
+    else if (wall==4 | wall==7 | wall==8) {
+      clockwise(60, 90);
     }
   }
 
@@ -750,7 +736,5 @@ void loop() {
   Serial.println();
   // client.write('\n');
   // }
-  
-
   delay(250);
 }
