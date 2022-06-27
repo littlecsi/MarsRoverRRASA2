@@ -59,60 +59,31 @@ function createMap(step, view) {
 
 function DataProccessing(data) {  
     const step = 25;
-    var obstaclesFound = [];
+    var numberOfDetections = 0;
     console.log('connection data from %s: %j', remoteAddress, data.toString());
     if(data.toString().charAt(0) === '1') {
         var batteryData = data.toString().split(",");
         website.emit("BatteryData", [batteryData]);
     } 
-    if(data.toString().charAt(0) === '$') {
-        website.emit("Detection", ["pink", [2,10]]);
-    }
     if(data.toString().charAt(0) === '[') { // special starting character for view data
-        var viewData = data.toString().substring(1).slice(0, -1).split(";");
-        for(let i = 0; i < viewData.length; i++) {
-        viewData[i] = viewData[i].split(",");
-        viewData[i][0] = Number(viewData[i][0]);
-        viewData[i][1] = Number(viewData[i][1]);
-        }
+        var viewData = data.toString().substring(1).slice(0, -1);
+        website.emit("ViewData", [viewData]);
         view = viewData;
         viewReceived = true;
     }
-    //conn.write(d); send back to client
-    while(!back && obstaclesFound.length < 5) {
-        while(!viewReceived);
-        viewReceived = false;
-        if(view[0][1] !== 0 && !obstaclesFound.includes("fuchsia")) {
-            obstaclesFound.push("fuchsia");
-            website.emit("Detection: ", ["fuchsia", view[0]]);
+    while(numberOfDetections < 7) {
+        while(viewReceived = true){
+            viewReceived = false;
+            numberOfDetections = numberOfDetections + 1
+            var map = createMap(step, view);
         }
-        if(view[1][1] !== 0 && !obstaclesFound.includes("green")) {
-            obstaclesFound.push("green");
-            website.emit("Detection: ", ["green", view[1]]);
-        }
-        if(view[2][1] !== 0 && !obstaclesFound.includes("blue")) {
-            obstaclesFound.push("blue");
-            website.emit("Detection: ", ["blue", view[2]]);
-        }
-        if(view[3][1] !== 0 && !obstaclesFound.includes("yellow")) {
-            obstaclesFound.push("yellow");
-            website.emit("Detection: ", ["yellow", view[3]]);
-        }
-        if(view[4][1] !== 0 && !obstaclesFound.includes("red")) {
-            obstaclesFound.push("red");
-            website.emit("Detection: ", ["red", view[4]]);
-        }
-        if(view[4][1] !== 0 && !obstaclesFound.includes("teal")) {
-            obstaclesFound.push("teal");
-            website.emit("Detection: ", ["teal", view[4]]);
-        }
-        var map = createMap(step, view);
         
     }
 }
 
 
 //connection to web client
+
 const server = app.listen(8000, () => {
     console.log("Application started and listening on port 8000");
 });
