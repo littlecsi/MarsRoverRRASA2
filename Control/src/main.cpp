@@ -83,28 +83,27 @@ Robojax_L298N_DC_motor robot(IN1, IN2, ENA, CHA,  IN3, IN4, ENB, CHB);
 #define ADNS3080_PRODUCT_ID_VAL        0x17
 
 // ---------- OPTICAL SENSOR ----------
-int argument = 0;
+float argument = 0;
 
-int total_x = 0;
-int total_y = 0;
 
-int total_x1 = 0;
-int total_y1 = 0;
-
-int x=0;
-int y=0;
 
 int a=0;
 int b=0;
 
-int distance_x=0;
-int distance_y=0;
+float distance_x=0;
+float distance_y=0;
 
 volatile byte movementflag=0;
 volatile int xydat[2];
 
 float co_x=0;
 float co_y=0;
+
+typedef struct point
+{
+  float x;
+  float y;
+}point;
 
 int convTwosComp(int b)
 {
@@ -403,14 +402,13 @@ float clockwise(int speed, int argument) {
     Serial.print('\n');
     
     traveled = sqrt(y*y + x*x); //update distance travelled
-    float argument = (traveled / 2*M_PI*r)*180;
+    float argument = (traveled / 2*M_PI*r)*360;
   }
 
   robot.brake(1); //stop the motors
   robot.brake(2);
 
   return argument;
-  delay(100000);
 }
 
 
@@ -464,83 +462,41 @@ float anticlockwise(int speed, int argument) {
     Serial.print('\n');
 
     traveled = sqrt(y*y + x*x); //update distance traveled
-    float argument = (traveled / 2*M_PI*r)*180;
+    float argument = (traveled / 2*M_PI*r)360;
   }
 
   robot.brake(1); //stop the motors
   robot.brake(2);
 
   return argument;
-  delay(100000);
 }
 
 
-float forward (int speed) {
+void forward (int speed) {
   robot.rotate(motor1, speed, CW); //set motors to specified speed and forward direction
   robot.rotate(motor2, speed, CW); // //the input is the total distance, thus the target is the 
                                     //current value of y + the desired distance
           //stay inside the loop until the target is reached
-  int y=0;
-  int x=0;
-  int x1=0;
-  int y1=0;
-                        
-  bool brake = false;
-  
-  while(brake == false) {
-    delay(250);
+  } //exit the loop 
 
-    int val = mousecam_read_reg(ADNS3080_PIXEL_SUM);
-    MD md;
-    mousecam_read_motion(&md);
-    for(int i=0; i<md.squal/4; i++)
-      Serial.print('*');
-    Serial.print(' ');
-    Serial.print((val*100)/351);
-    Serial.print(' ');
-    Serial.print(md.shutter); Serial.print(" (");
-    Serial.print((int)md.dx); Serial.print(',');
-    Serial.print((int)md.dy); Serial.println(')');
-  
-    distance_x = md.dx; //convTwosComp(md.dx);
-    distance_y = md.dy; //convTwosComp(md.dy);
 
-    x1 = x1 + distance_x;
-    y1 = y1 + distance_y;
-    
-    x = x1/157;
-    y = y1/157;
-    
-    Serial.print('\n');
-    
-    Serial.println("Distance_x = " + String(x));
-    
-    Serial.println("Distance_y = " + String(y));
-    Serial.print('\n');
-
-    brake = checkBrake(sqrt(x*x + y*y));  
-   } //exit the loop 
-  robot.brake(motor1);
-  robot.brake(motor2);
-
-  return sqrt(x*x + y*y);
-}
 
 
 float backward (int speed) {
   robot.rotate(motor1, speed, CCW); //set motors to specified speed and forward direction
   robot.rotate(motor2, speed, CCW); // //the input is the total distance, thus the target is the 
                                     //current value of y + the desired distance
-          //stay inside the loop until the target is reached
-  int y=0;
-  int x=0;
-  int x1=0;
-  int y1=0;
-                        
-  bool brake = false;
   
-  while(brake == false){
-    delay(250);
+}
+
+
+
+
+
+
+point optical_sensor(float x1, float y1){
+
+    point coordintates;
 
     int val = mousecam_read_reg(ADNS3080_PIXEL_SUM);
     MD md;
@@ -560,31 +516,67 @@ float backward (int speed) {
     x1 = x1 + distance_x;
     y1 = y1 + distance_y;
     
-    x = x1/157;
-    y = y1/157;
-    
-    Serial.print('\n');
-    
-    Serial.println("Distance_x = " + String(x));
-    
-    Serial.println("Distance_y = " + String(y));
-    Serial.print('\n');
+    float x = x1/157;
+    float y = y1/157;
 
-    brake = checkBrake(sqrt(x*x + y*y));
-   } //exit the loop 
-    robot.brake(motor1);
-    robot.brake(motor2);
+    coordinates.x = x;
+    coordinates.y = y;
 
-    return sqrt(x*x + y*y);  
+    return coordinates;
 }
 
 
-bool checkBrake(int d){   //this will need to be implemented depenending
-  if (d>10)               //on how you want to giv the command 
-    return true ;
-  
-  else return false;
+/* wall checker integer meanings:
+
+- 1 is wall north
+- 2 is wall east
+- 3 is wall south
+- 4 is wall west
+
+- 5 is north/east
+- 6 is east/south
+- 7 is south/west
+- 8 is north/west
+
+length 21 cm
+width  19 cm
+
+*/
+int wall_checker(float x, float y){
+  if (x < 120){
+   
+    if(y<120){
+      return 7;
+
+    }
+    else if(y>3435){
+      return 8;
+    }
+    else{
+      return 4;
+    }
+
+  }
+  else if (x>3207){
+    if(y<120){
+      return 6;
+    }
+    else if(y>3435){
+      return 5;
+    }
+    else{
+      return 2;
+    }
+  }
+    
+  else if (y > 3435){
+    return 1;
+  }
+  else return 3;
 }
+
+
+
 
 
 void loop() {
@@ -651,6 +643,51 @@ void loop() {
   }
   */
 
+
+//optical sensor reading 
+//current coordinates determine if near wall
+//return where wall integer
+
+    point position;
+
+    int direction = 0; //1 = forward; 2 = backward; 3 = CW; 4 = CCW
+                       //if not moving set direction to 0 always!!
+                       //ie. just set direction to 0 everytime you brake
+    if(direction == 1){
+      forward(speed);
+    }
+    else if(direction == -1){
+      backward(speed);
+    }
+    else if(direction == 2){
+      argument = clockwise(speed, angle);
+      direction = 0;
+    }
+    else if(direction == -2){
+      argument = -1 * anticlockwise(speed, angle);
+      direction = 0;
+    }
+
+  
+
+    if (direction == 1 || direction == -1){
+      position = optical_sensor(position.x, position.y);
+      float movement = direction * (position.x*position.x + position.y*position.y);
+      co_x = co_x + movement * cos(argument);
+      co_y = co_y + movement * sin(argument);
+    }
+
+    else if (direction == 0){
+      position.x = 0;
+      positoin.y = 0;
+    }
+
+    
+    
+
+
+
+
   // Decision Making based on the Vision DataStream - while on autonomous mode
   if (VisionMsg[0] == 1 & autonomous) {
     // TODO: Send Detection data to the server.
@@ -715,5 +752,5 @@ void loop() {
   // }
   
 
-  delay(1000);
+  delay(250);
 }
