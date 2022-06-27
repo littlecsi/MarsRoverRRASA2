@@ -5,6 +5,7 @@ var CurrentPosition = ["undefined","undefined"];
 var globalAngle = 0;
 
 //NO CLUE?
+//create map logic not mine
 function createMap(step, view) {
     let width = 1; // an element represents 5cm x 5cm box
     let extra = 10; // extra width
@@ -55,7 +56,6 @@ function createMap(step, view) {
     }
     return [result, blocked, distanceAfterDetection, distanceBeforeDetection];
 }
-
 
 function DataProccessing(data) {  
     const step = 25;
