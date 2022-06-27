@@ -1,0 +1,66 @@
+.angleLabel {
+    position: absolute;
+    left: 540px;
+    top: 220px;
+}
+.angleBox {
+    position: absolute;
+    left: 670px;
+    top: 220px;
+}
+.distanceLabel {
+    position: absolute;
+    left: 540px;
+    top: 280px;
+}
+.distanceBox {
+    position: absolute;
+    left: 670px;
+    top: 280px;
+}
+.speedLabel {
+    position: absolute;
+    left: 540px;
+    top: 340px;
+}
+.speedBox {
+    position: absolute;
+    left: 670px;
+    top: 340px;
+}
+
+.sendControlData {
+    position: absolute;
+    left: 700px;
+    top: 410px;
+}
+
+.header {
+    text-decoration: bold;
+    color: black;
+    font-size: 30px;
+}
+
+.automated {
+    position: absolute;
+    left: 300px;
+    top: 150px;
+}
+
+.manual {
+    position: absolute;
+    left: 600px;
+    top: 150px;
+}
+
+.start {
+    position: absolute;
+    left: 360px;
+    top: 220px;
+}
+
+.stop {
+    position: absolute;
+    left: 380px;
+    top: 300px;
+}
