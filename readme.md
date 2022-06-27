@@ -6,7 +6,7 @@ Control - Lian Choi
 
 Drive - Kiril Avramov
 
-Vision - Kihyun Kim, Long Zou
+Vision - Kihyun Kim
 
 Energy - Hamed Mohammed
 
