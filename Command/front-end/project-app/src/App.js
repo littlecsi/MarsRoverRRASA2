@@ -55,10 +55,8 @@ function displayDetection(detection, pos, angle) {
       //
   };
   //NO CLUE?
-  var xpos = detection[1][0]*Math.cos(angle*Math.PI/180) 
-              - detection[1][1]*Math.sin(angle*Math.PI/180);
-  var ypos = detection[1][0]*Math.sin(angle*Math.PI/180) 
-              + detection[1][1]*Math.cos(angle*Math.PI/180);
+  var xpos = 12*Math.cos(angle*Math.PI/180) 
+  var ypos = 12*Math.sin(angle*Math.PI/180) 
   detectionSet.push(
     <Star x={pos[0]+xpos} y={pos[1]+ypos} fill={color} numPoints={numPoints} innerRadius={innerRadius} outerRadius={outerRadius}/>
     );
@@ -95,6 +93,7 @@ function App() {
       //this.setState({});
     })
   }, []);
+
   const [detection, setDetection] = useState(["unknown",0]);
   useEffect(() => {
     Socket.on("Detection", data => {
@@ -104,8 +103,13 @@ function App() {
     });
   });
   useEffect(() => {
-    Socket.on("CurrentPosition", data => {
-      Socket.emit("CurrentPosition", [currPos_backend, global_angle]);
+    Socket.on("RoverPosition", data => {
+      Socket.emit("RoverPosition", currPos_backend);
+    });
+  }, []);
+  useEffect(() => {
+    Socket.on("GlobalAngle", data => {
+      Socket.emit("GlobalAngle", global_angle);
     });
   }, []);
 

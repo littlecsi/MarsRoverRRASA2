@@ -63,15 +63,23 @@ function dataProccessing(data) {
     const step = 25;
     var numberOfDetections = 0;
     console.log('connection data from %s: %j', remoteAddress, data.toString());
-    if(data.toString().charAt(0) === '1') {
-        var batteryData = data.toString().split(",");
+    if(data.toString().charAt(0) === 'B:') {
+        var batteryData = data.toString().substring(2);
         website.emit("BatteryData", [batteryData]);
     } 
-    if(data.toString().charAt(0) === '[') { // special starting character for view data
-        var viewData = data.toString().substring(1).slice(0, -1);
+    if(data.toString().charAt(0) === 'V:') { // special starting character for view data
+        var viewData = data.toString().substring(2);
         website.emit("ViewData", [viewData]);
         view = viewData;
         viewReceived = true;
+    }
+    if(data.toString().charAt(0) === 'GA:') { // special starting character for view data
+        var globalAngle = data.toString().substring(3);
+        website.emit("GlobalAngle", [global_angle]);
+    }
+    if(data.toString().charAt(0) === 'P:') { // special starting character for view data
+        var roverPosition = data.toString().substring(2);
+        website.emit("RoverPosition", [roverPosition]);
     }
     while(numberOfDetections < 7) {
         while(viewReceived = true){
@@ -129,8 +137,5 @@ io.on('connection', (socket) => {
             //stop automated driving
         }
     });
-    socket.on("CurrentPosition", data => {
-    globalAngle = Number(data[1]);
-    CurrentPosition = [Number(data[0][0]),Number(data[0][1])];
-})
+
 });
