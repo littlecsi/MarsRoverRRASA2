@@ -24,9 +24,6 @@ var detectionSet = [];
 
 function displayDetection(detection, pos, angle) {
   var color = "#97df62";
-  var numPoints= 5;
-  var innerRadius= 8;
-  var outerRadius= 16
 
   switch(detection[0]) {
     case "red":
@@ -56,7 +53,7 @@ function displayDetection(detection, pos, angle) {
   var ypos = detection[1][0]*Math.sin(angle*Math.PI/180) 
               + detection[1][1]*Math.cos(angle*Math.PI/180);
   detectionSet.push(
-    <Star x={pos[0]+xpos} y={pos[1]+ypos} fill={color} numPoints={numPoints} innerRadius={innerRadius} outerRadius={outerRadius}/>
+    <Star x={pos[0]+xpos} y={pos[1]+ypos} fill={color} numPoints={5} innerRadius={8} outerRadius={16}/>
     );
 }
 
@@ -91,7 +88,7 @@ function App() {
       //this.setState({});
     })
   }, []);
-  const [detection, setDetection] = useState(["unknown",[0,0]]);
+  const [detection, setDetection] = useState(["unknown",0]);
   useEffect(() => {
     Socket.on("Detection", data => {
       console.log("something detected: %s", data);
