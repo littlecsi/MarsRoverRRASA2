@@ -110,14 +110,6 @@ function DataProccessing(data) {
         
     }
 }
-}
-
-function onConnClose() {  
-    console.log('connection from %s closed', remoteAddress);  
-}
-function onConnError(err) {  
-    console.log('Connection %s error: %s', remoteAddress, err.message); 
-}
 
 
 //connection to web client
@@ -129,7 +121,7 @@ var website;
 const io = require('socket.io')(server);
 io.on('connection', (socket) => {
     console.log('user connected');
-    website = socket; // storing website client
+    website = socket;
     socket.once('disconnect', () => {
         console.log('user disconnected');
     });
