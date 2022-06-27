@@ -85,7 +85,8 @@ Robojax_L298N_DC_motor robot(IN1, IN2, ENA, CHA,  IN3, IN4, ENB, CHB);
 // ---------- OPTICAL SENSOR ----------
 float argument = 0;
 
-
+int total_x = 0;
+int total_y = 0;
 
 int a=0;
 int b=0;
@@ -462,7 +463,7 @@ float anticlockwise(int speed, int argument) {
     Serial.print('\n');
 
     traveled = sqrt(y*y + x*x); //update distance traveled
-    float argument = (traveled / 2*M_PI*r)360;
+    float argument = (traveled / 2*M_PI*r)*360;
   }
 
   robot.brake(1); //stop the motors
@@ -494,9 +495,8 @@ float backward (int speed) {
 
 
 
-point optical_sensor(float x1, float y1){
-
-    point coordintates;
+point optical_sensor(float x1, float y1) {
+    point coordinates;
 
     int val = mousecam_read_reg(ADNS3080_PIXEL_SUM);
     MD md;
@@ -654,17 +654,17 @@ void loop() {
                        //if not moving set direction to 0 always!!
                        //ie. just set direction to 0 everytime you brake
     if(direction == 1){
-      forward(speed);
+      forward(80);
     }
     else if(direction == -1){
-      backward(speed);
+      backward(80);
     }
     else if(direction == 2){
-      argument = clockwise(speed, angle);
+      argument = clockwise(60, 90);
       direction = 0;
     }
     else if(direction == -2){
-      argument = -1 * anticlockwise(speed, angle);
+      argument = -1 * anticlockwise(60, 90);
       direction = 0;
     }
 
@@ -679,7 +679,7 @@ void loop() {
 
     else if (direction == 0){
       position.x = 0;
-      positoin.y = 0;
+      position.y = 0;
     }
 
     
