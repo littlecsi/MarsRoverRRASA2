@@ -57,28 +57,6 @@ function createMap(step, view) {
 }
 
 
-// TCP server communicates with the ESP32    //change to https
-var net = require('net');
-var tcpserver = net.createServer();
-var esp32 = "undefined";4
-tcpserver.on('connection', handleConnection);
-const tcphost = '0.0.0.0'; // localhost
-const tcpport = 9000;
-tcpserver.listen(tcpport, tcphost, function() {
-    console.log('Server is listening to %j', tcpserver.address());
-});
-
-function handleConnection(socket) {
-    esp32 = socket; 
-    CurrentPosition = [0,0];
-    console.log('ESP32 socket stored');
-    var remoteAddress = socket.remoteAddress + ':' + socket.remotePort;  
-    console.log('TCP: new client connection from %s', remoteAddress);
-    socket.write("You are connected");
-    socket.on('data', DataProccessing);  
-    socket.once('close', onConnClose);  
-    socket.on('error', onConnError);
-
 function DataProccessing(data) {  
     const step = 25;
     var obstaclesFound = [];
