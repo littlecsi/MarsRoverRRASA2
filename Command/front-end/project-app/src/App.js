@@ -50,12 +50,6 @@ function displayDetection(detection, pos, angle) {
     default:
       //
   };
-  if (detection[1][0]){ /*[1]=0 [2]=0 - nothing ahead, [1]=0 [2]=1- alien ahead, [1]=1 [2]=0- colony ahead */
-    color= "#1c1e1b"
-    numPoints= 10
-    innerRadius= 18
-    outerRadius= 22
-  } 
   //NO CLUE?
   var xpos = detection[1][0]*Math.cos(angle*Math.PI/180) 
               - detection[1][1]*Math.sin(angle*Math.PI/180);
