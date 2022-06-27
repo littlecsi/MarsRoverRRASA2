@@ -24,7 +24,9 @@ var detectionSet = [];
 
 function displayDetection(detection, pos, angle) {
   var color = "#97df62";
-
+  var numPoints = 5
+  var innerRadius = 8
+  var outerRadius = 16
   switch(detection[0]) {
     case "red":
       color = "#eb7bdd";
@@ -44,6 +46,11 @@ function displayDetection(detection, pos, angle) {
     case "blue ":
       color = "#8bcbd4";
       break
+    case "bnw":
+      color= "#1c1e1b"
+      numPoints= 10
+      innerRadius= 18
+      outerRadius= 22
     default:
       //
   };
@@ -53,7 +60,7 @@ function displayDetection(detection, pos, angle) {
   var ypos = detection[1][0]*Math.sin(angle*Math.PI/180) 
               + detection[1][1]*Math.cos(angle*Math.PI/180);
   detectionSet.push(
-    <Star x={pos[0]+xpos} y={pos[1]+ypos} fill={color} numPoints={5} innerRadius={8} outerRadius={16}/>
+    <Star x={pos[0]+xpos} y={pos[1]+ypos} fill={color} numPoints={numPoints} innerRadius={innerRadius} outerRadius={outerRadius}/>
     );
 }
 
