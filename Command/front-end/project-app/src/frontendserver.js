@@ -3,6 +3,7 @@ const app = express();
 
 var CurrentPosition = ["undefined","undefined"];
 var globalAngle = 0;
+var viewReceived = false;
 
 //NO CLUE?
 //create map logic not mine
@@ -57,7 +58,8 @@ function createMap(step, view) {
     return [result, blocked, distanceAfterDetection, distanceBeforeDetection];
 }
 
-function DataProccessing(data) {  
+
+function dataProccessing(data) {  
     const step = 25;
     var numberOfDetections = 0;
     console.log('connection data from %s: %j', remoteAddress, data.toString());
@@ -96,6 +98,7 @@ io.on('connection', (socket) => {
     socket.once('disconnect', () => {
         console.log('user disconnected');
     });
+    socket.on('data', dataProccessing);
     socket.on('Angle', data => {
         console.log("Angle from Manual Driving : %s", data);
         if(esp32 !== "undefined") {
