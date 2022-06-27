@@ -15,6 +15,9 @@ export default function Command() {
         if((document.getElementById('angle').value === '') && (document.getElementById('distance').value === '')){
           alert('Error: Missing Angle or Distance');
         } 
+        if((document.getElementById('speed').value < 10) || (document.getElementById('speed').value > 70)){
+          alert('Error: Speed not in allowed range');
+        } 
         else {
           var enteredAngle = document.getElementById('angle').value;
           var enteredDistance = document.getElementById('distance').value;
