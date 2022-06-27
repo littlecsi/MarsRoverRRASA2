@@ -133,7 +133,36 @@ io.on('connection', (socket) => {
     socket.once('disconnect', () => {
         console.log('user disconnected');
     });
-
+    socket.on('Angle', data => {
+        console.log("Angle from Manual Driving : %s", data);
+        if(esp32 !== "undefined") {
+            esp32.write(data);
+        }
+        socket.emit('Angle', data);
+    });
+    socket.on('Distance', data => {
+        console.log("Distance from Manual Driving : %s", data);
+        if(esp32 !== "undefined") {
+            esp32.write(data);
+        }
+        socket.emit('Distance', data);
+    });
+    socket.on('Speed', data => {
+        console.log("Speed from Manual Driving : %s", data);
+        if(esp32 !== "undefined") {
+            esp32.write(data);
+        }
+        socket.emit('Speed', data);
+    });
+    socket.on('Command', data => {
+        console.log("Switch for Automated Driving : %s", data);
+        if (data === "start"){
+            //start automated driving
+        }
+        else if(data ==="stop"){
+            //stop automated driving
+        }
+    });
     socket.on("CurrentPosition", data => {
     globalAngle = Number(data[1]);
     CurrentPosition = [Number(data[0][0]),Number(data[0][1])];
