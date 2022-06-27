@@ -6,6 +6,7 @@ var arenaY = 0;
 var arenaWidth = window.innerWidth;
 var arenaHeight = window.innerHeight*3/4;
 
+//NO CLUE ABOUT SLEECTION STATEMENTS BELOW
 function Map({pos, detection, arena}) {
     var roverWidth = 21;
     var basePos = [window.innerWidth/2 - roverWidth/2, window.innerHeight/2];

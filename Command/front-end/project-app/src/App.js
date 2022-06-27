@@ -5,7 +5,6 @@ import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import {Star} from 'react-konva';
 import io from 'socket.io-client';
 
-
 import Home from './components/pages/Home';
 import Command from './components/pages/Command';
 import Battery from './components/pages/Battery';
@@ -56,7 +55,8 @@ function displayDetection(detection, pos, angle) {
     numPoints= 10
     innerRadius= 18
     outerRadius= 22
-  }
+  } 
+  //NO CLUE?
   var xpos = detection[1][0]*Math.cos(angle*Math.PI/180) 
               - detection[1][1]*Math.sin(angle*Math.PI/180);
   var ypos = detection[1][0]*Math.sin(angle*Math.PI/180) 
@@ -74,6 +74,7 @@ function App() {
       setBatteryData(data);
     });
   }, []);
+  
 
   //const [angleDistanceSet, setAngleDistance] = useState([0,0]);
   useEffect(() => {

@@ -9,7 +9,7 @@ export default function Command() {
 
   function sendControlData() {
     if(drivingMethod === "auto") {
-        alert("The rover is in automated driving mode. Press 'Stop!' to quit automated driving mode before trying again.");
+        alert("The rover is in automated driving mode. Press 'Stop!' before trying again.");
     } 
     else {
         if((document.getElementById('angle').value === '') && (document.getElementById('distance').value === '')){

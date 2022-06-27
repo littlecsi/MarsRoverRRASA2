@@ -4,7 +4,7 @@ const app = express();
 var CurrentPosition = ["undefined","undefined"];
 var globalAngle = 0;
 
-
+//NO CLUE?
 function createMap(step, view) {
     let width = 1; // an element represents 5cm x 5cm box
     let extra = 10; // extra width
