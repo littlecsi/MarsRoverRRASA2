@@ -528,43 +528,32 @@ int direction = 0;  // 1 = forward; 2 = backward; 3 = CW; 4 = CCW
                       // if not moving set direction to 0 always!!
                       // ie. just set direction to 0 everytime you brake
 
-/* wall checker integer meanings:
+/* 
+wall checker integer meanings:
 1 is wall north - LEFT
 2 is wall east - LEFT
 3 is wall south 
 4 is wall west - RIGHT
 
-5 is north/east - LEFT
-6 is east/south - LEFT
-7 is south/west - RIGHT
-8 is north/west - RIGHT
-
 length 21 cm
 width  19 cm
 */
-int wall_checker(float x, float y) { 
-  if (x < 120) {
-    if (y < 120) {
-      return 7;
+int wall_checker(float x, float y, int argument) { 
+    if (argument > 360){
+        argument = argument - 360;
     }
-    else if (y > 3435) {
-      return 8;
-    } else {
-      return 4;
+    else if (argument < -360){
+        argument = argument + 360;
     }
-  } else if (x > 3207) {
-    if (y < 120) {
-      return 6;
-    } else if (y > 3435) {
-      return 5;
-    } else {
-      return 2;
-    }
-  } else if (y > 3435) {
-    return 1;
-  } else {
-    return 3;
-  }
+    if (x<120 && ((argument > 265 && argument < 275) || (argument > -95 && argument < -85))) { // WEST
+        return 2;
+    } else if((x>3435)&&((argument > 85 && argument < 95) || (argument > -265 && argument < -275))) { // EAST
+        return 1;
+    } else if ((y<120)&&((argument < 185 && argument > 175) || (argument > -175 && argument < -185))) { // SOUTH
+        return 1;
+    } else if ((y>3207)&&(argument > -5 && argument < 5)) { // NORTH
+        return 1;
+    } else return 0;
 }
 
 
@@ -648,7 +637,7 @@ void loop() {
     position.y = 0;
   }
 
-  int wall = wall_checker(co_x, co_y); // Checks if there is a wall near the rover.
+  int wall = wall_checker(co_x, co_y, argument); // Checks if there is a wall near the rover.
 
   // Decision Making based on the Vision DataStream when autonomous
   if (VisionMsg[0]==1 & autonomous) {
@@ -663,7 +652,7 @@ void loop() {
       obj_bin += std::to_string(VisionMsg[i]);
     int obj = std::stoi(obj_bin, 0, 2);
 
-    if (area > 42840 && area < 48400 && obj != 6) { // If an alien is detected
+    if (area > 30794 && area < 76100 && obj != 6) { // If an alien is detected
       std::string xcoord_bin = "";
 
       for (int i = 4; i < 15; i++) 
@@ -696,14 +685,14 @@ void loop() {
         clockwise(60, 90);
       }
     }
-    else if (area > 50000 && obj==6) { // If alien building is detected, TURN LEFT
+    else if (area > 231360 && area < 240100 && obj==6) { // If alien building is detected, TURN LEFT
       anticlockwise(60, 90);
     }
   } else if (autonomous) { // Autonomous Driving without any detection. 
-    if (wall==1 | wall==2 | wall==5 | wall==6) {
+    if (wall==1) {
       anticlockwise(60, 90);
     }
-    else if (wall==4 | wall==7 | wall==8) {
+    else if (wall==2) {
       clockwise(60, 90);
     }
     else {
