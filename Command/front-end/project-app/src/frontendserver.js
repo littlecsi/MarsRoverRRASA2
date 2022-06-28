@@ -8,54 +8,6 @@ var viewReceived = false;
 //NO CLUE?
 //create map logic not mine
 function createMap(step, view) {
-    let width = 1; // an element represents 5cm x 5cm box
-    let extra = 10; // extra width
-    var largestWidth = view[0][1] !== 0 ? Math.abs(view[0][0]) : 1;
-    var furthestAway = view[0][1];
-    for(let i = 1; i < view.length; i++) {
-        if(Math.abs(view[i][0]) > largestWidth) {
-            largestWidth = Math.abs(view[i][0]);
-        }
-        if(view[i][1] > furthestAway) {
-            furthestAway = view[i][1];
-        }
-    }
-    var graphWidth = Math.ceil((largestWidth + 15 + extra) * 2 / width);
-    var graphHeight = Math.max(Math.ceil(step / width)+1, Math.ceil((furthestAway + 15 + 1) / width) );
-    var result = Array(graphHeight);
-    for(let i = 0; i < graphHeight; i++) {
-        result[i] = Array(graphWidth).fill(1);
-    }
-    view.forEach(detection => {
-        if(detection[1] !== 0) {
-            var detectionX = detection[0] > 0 ? graphWidth/2 + Math.ceil(detection[0]/width) : graphWidth/2 + Math.floor(obstacle[0]/width);
-            for(let i = Math.ceil(detection[1]/width) - Math.ceil(15/width); i < Math.ceil(detection[1]/width) + Math.ceil(15/width); i++) {
-                for(let j = Math.ceil(detectionX) - Math.ceil(15/width); j < Math.ceil(detectionX) + Math.ceil(15/width); j++) {
-                    result[i][j] = 0;
-                }
-            }
-        }
-    });
-    var blocked = false;
-    var distanceAfterDetection = 0;
-    var distanceBeforeDetection = 0;
-    if(result[Math.ceil(step)][Math.ceil(result[0].length/2)-1] === 0) {
-        blocked = true;
-        let i = Math.ceil(step);
-        for(let i = Math.ceil(step); i < result.length; i++) {
-            if(result[i][Math.ceil(result[0].length/2)-1] === 1) {
-                distanceAfterDetection = i;
-                break
-            }
-        }
-        for(let i = Math.ceil(step)-1; i >= 0; i--) {
-            if(result[i][Math.ceil(result[0].length/2)-1] === 1) {
-                distanceBeforeDetection = i;
-                break
-            }
-        }
-    }
-    return [result, blocked, distanceAfterDetection, distanceBeforeDetection];
 }
 
 
@@ -87,7 +39,6 @@ function dataProccessing(data) {
             numberOfDetections = numberOfDetections + 1
             var map = createMap(step, view);
         }
-        
     }
 }
 
