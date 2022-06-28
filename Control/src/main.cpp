@@ -11,8 +11,8 @@
 
 #include <Robojax_L298N_DC_motor.h>
 
-#define RXP1 9 // Defining UART With Vision (Pins 8 and 9 on Arduino Adaptor) 
-#define TXP1 10 
+#define RXP1 3 // Defining UART With Vision (Pins 8 and 9 on Arduino Adaptor) 
+#define TXP1 1 
 
 #define VSPI_MISO 15 // Defining SPI with Camera on Vision (Pins 10, 11, 12 and 13 on Arduino Adaptor)
 #define VSPI_MOSI 4
@@ -83,6 +83,8 @@ Robojax_L298N_DC_motor robot(IN1, IN2, ENA, CHA,  IN3, IN4, ENB, CHB);
 #define ADNS3080_PRODUCT_ID_VAL        0x17
 
 // ---------- OPTICAL SENSOR ----------
+int direction = 0;
+
 float argument = 0;
 
 int total_x = 0;
@@ -104,7 +106,9 @@ typedef struct point
 {
   float x;
   float y;
-}point;
+} point;
+
+point position;
 
 int convTwosComp(int b)
 {
@@ -230,6 +234,7 @@ int mousecam_frame_capture(byte *pdata)
 
 // ---------- Control Subsystem ----------
 WiFiClient client;
+HTTPClient http;
 SPIClass* vspi = NULL; //Container for VSPI connection
 
 // Message related variables
@@ -288,11 +293,11 @@ void setup() {
   Serial.begin(115200); // Debugging
   Serial1.begin(115200, SERIAL_8N1, RXP1, TXP1); // Uart with Vision
   
-  vspi = new SPIClass(VSPI); // Initialising VSPI connection
-  vspi->begin(VSPI_SCLK, VSPI_MISO, VSPI_MOSI, VSPI_SS);
-  vspi->setClockDivider(SPI_CLOCK_DIV8);
+  // vspi = new SPIClass(VSPI); // Initialising VSPI connection
+  // vspi->begin(VSPI_SCLK, VSPI_MISO, VSPI_MOSI, VSPI_SS);
+  // vspi->setClockDivider(SPI_CLOCK_DIV8);
 
-  pinMode(VSPI_SS, OUTPUT);
+  // pinMode(VSPI_SS, OUTPUT);
 
   pinMode(PIN_SS,OUTPUT);
   pinMode(PIN_MISO,INPUT);
@@ -304,41 +309,15 @@ void setup() {
   SPI.setDataMode(SPI_MODE3);
   SPI.setBitOrder(MSBFIRST);
 
-  if(mousecam_init()==-1)
-  {
+  if (mousecam_init()==-1) {
     Serial.println("Mouse cam failed to init");
     while(1);
   }
 
-
   //motor setup
   robot.begin();
 
-  // initWiFi();
-  HTTPClient http;
-  String GetAddress, LinkGet, getData, name;
-  GetAddress = "";
-  LinkGet = host + GetAddress;
-  name = "";
-  
-  // Your Domain name with URL path or IP address with path
-  http.begin(client, LinkGet.c_str(), 80);
-  
-  // Send HTTP GET request
-  int httpResponseCode = http.GET();
-  
-  if (httpResponseCode > 0) {
-    Serial.print("HTTP Response code: ");
-    Serial.println(httpResponseCode);
-    // String payload = http.getString();
-    // Serial.println(payload);
-  }
-  else {
-    Serial.print("Error code: ");
-    Serial.println(httpResponseCode);
-  }
-  // Free resources
-  http.end();
+  initWiFi();
 }
 
 
@@ -352,12 +331,18 @@ char asciiart(int k)
 byte frame[ADNS3080_PIXELS_X * ADNS3080_PIXELS_Y];
 
 
+void stop () {
+  robot.brake(1);
+  robot.brake(2);
+}
+
+
 float clockwise(int speed, int argument) {
   robot.rotate(motor1, speed, CW);    // As with forward the speed is set to a given value
   robot.rotate(motor2, speed, CCW);
   
   float traveled = 0;
-  float r = 13.7;  // define a variable for distance travelled
+  float r = 12.8;  // define a variable for distance travelled
   
   int x1;
   int y1;
@@ -407,6 +392,9 @@ float clockwise(int speed, int argument) {
 
   stop();
 
+  position.x = 0;
+  position.y = 0;
+
   return argument;
 }
 
@@ -416,7 +404,7 @@ float anticlockwise(int speed, int argument) {
   robot.rotate(motor2, speed, CW);
   
   float traveled = 0;
-  float r = 13.7;  //define a variable for distance travelled
+  float r = 12.8;  //define a variable for distance travelled
   
   int x1;
   int y1;
@@ -466,6 +454,9 @@ float anticlockwise(int speed, int argument) {
 
   stop();
 
+  position.x = 0;
+  position.y = 0;
+
   return argument;
 }
 
@@ -475,6 +466,7 @@ void forward (int speed) {
   robot.rotate(motor2, speed, CW);  // the input is the total distance, thus the target is the 
                                     // current value of y + the desired distance
                                     // stay inside the loop until the target is reached
+  direction = 1;
 }
 
 
@@ -482,13 +474,7 @@ void backward (int speed) {
   robot.rotate(motor1, speed, CCW); // set motors to specified speed and forward direction
   robot.rotate(motor2, speed, CCW); // the input is the total distance, thus the target is the 
                                     // current value of y + the desired distance
-}
-
-
-void stop () {
-  robot.brake(1);
-  robot.brake(2);
-  direction = 0;
+  direction = -1;
 }
 
 
@@ -521,12 +507,6 @@ point optical_sensor(float x1, float y1) {
 
     return coordinates;
 }
-
-point position;
-
-int direction = 0;  // 1 = forward; 2 = backward; 3 = CW; 4 = CCW
-                      // if not moving set direction to 0 always!!
-                      // ie. just set direction to 0 everytime you brake
 
 /* 
 wall checker integer meanings:
@@ -573,7 +553,7 @@ void loop() {
   // Checks if there is any data on the UART Vision datastream
   if (Serial1.available()) {
     // Erase everything in the VisionMsg variable first
-    for (int i = 0; i < 64; i++)
+    for (int i = 0; i < 32; i++)
       VisionMsg[i] = ' ';
 
     // Read data on the UART Vision datastream
@@ -622,25 +602,12 @@ void loop() {
   */
 
 
-  // optical sensor reading 
-  // current coordinates determine if near wall
-  // return where wall integer
-
-  if (direction==1) {
-    position = optical_sensor(position.x, position.y);
-    float movement = direction * (position.x*position.x + position.y*position.y);
-    co_x = co_x + movement * cos(argument);
-    co_y = co_y + movement * sin(argument);
-  } 
-  else if (direction==0) {
-    position.x = 0;
-    position.y = 0;
-  }
-
   int wall = wall_checker(co_x, co_y, argument); // Checks if there is a wall near the rover.
 
   // Decision Making based on the Vision DataStream when autonomous
   if (VisionMsg[0]==1 & autonomous) {
+    // http.begin(client, host, 80);
+
     // Converting Area and Object Detection data
     std::string area_bin = "";
     std::string obj_bin = "";
@@ -678,6 +645,20 @@ void loop() {
         default:
           break;
       }
+
+      // // Specify content-type header
+      // http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+      // // Data to send with HTTP POST
+      // String httpRequestData = "api_key=tPmAT5Ab3j7F9&sensor=BME280&value1=24.25&value2=49.54&value3=1005.14";           
+      // // Send HTTP POST request
+      // int httpResponseCode = http.POST(httpRequestData);
+     
+      // Serial.print("HTTP Response code: ");
+      // Serial.println(httpResponseCode);
+        
+      // Free resources
+      // http.end();
+      
       if (xcoord > 320) { // If the alien is found on the right, TURN LEFT
         anticlockwise(60, 90);
       }
@@ -697,6 +678,10 @@ void loop() {
     }
     else {
       forward(80);
+      position = optical_sensor(position.x, position.y);
+      float movement = direction * (position.x*position.x + position.y*position.y);
+      co_x = co_x + movement * cos(argument);
+      co_y = co_y + movement * sin(argument);
     }
   }
 
