@@ -287,7 +287,6 @@ void initWiFi() {
 void setup() {
   Serial.begin(115200); // Debugging
   Serial1.begin(115200, SERIAL_8N1, RXP1, TXP1); // Uart with Vision
-  // Serial2.begin(115200, SERIAL_8N1, RXP2, TXP2); // Uart with Drive
   
   vspi = new SPIClass(VSPI); // Initialising VSPI connection
   vspi->begin(VSPI_SCLK, VSPI_MISO, VSPI_MOSI, VSPI_SS);
@@ -316,30 +315,30 @@ void setup() {
   robot.begin();
 
   // initWiFi();
-  // HTTPClient http;
-  // String GetAddress, LinkGet, getData, name;
-  // GetAddress = "";
-  // LinkGet = host + GetAddress;
-  // name = "";
+  HTTPClient http;
+  String GetAddress, LinkGet, getData, name;
+  GetAddress = "";
+  LinkGet = host + GetAddress;
+  name = "";
   
-  // // Your Domain name with URL path or IP address with path
-  // http.begin(client, LinkGet.c_str(), 80);
+  // Your Domain name with URL path or IP address with path
+  http.begin(client, LinkGet.c_str(), 80);
   
-  // // Send HTTP GET request
-  // int httpResponseCode = http.GET();
+  // Send HTTP GET request
+  int httpResponseCode = http.GET();
   
-  // if (httpResponseCode > 0) {
-  //   Serial.print("HTTP Response code: ");
-  //   Serial.println(httpResponseCode);
-  //   // String payload = http.getString();
-  //   // Serial.println(payload);
-  // }
-  // else {
-  //   Serial.print("Error code: ");
-  //   Serial.println(httpResponseCode);
-  // }
-  // // Free resources
-  // http.end();
+  if (httpResponseCode > 0) {
+    Serial.print("HTTP Response code: ");
+    Serial.println(httpResponseCode);
+    // String payload = http.getString();
+    // Serial.println(payload);
+  }
+  else {
+    Serial.print("Error code: ");
+    Serial.println(httpResponseCode);
+  }
+  // Free resources
+  http.end();
 }
 
 
@@ -368,7 +367,7 @@ float clockwise(int speed, int argument) {
 
   float arclength = ((argument*M_PI/180)*r);
 
-  while (traveled < arclength){ // stay in loop until the target distance has been reached
+  while (traveled < arclength) { // stay in loop until the target distance has been reached
     delay(100);
 
     int val = mousecam_read_reg(ADNS3080_PIXEL_SUM);
@@ -571,16 +570,16 @@ int wall_checker(float x, float y) {
 
 void loop() {
   // Internet and webserver connection
-  // if (!connected) {
-  //   if (!client.connect(host, port)) {
-  //     Serial.println("Connection to host failed");
-  //     delay(100);
-  //     return;
-  //   }
-  //   Serial.println("Connected to server successful!");
-  //   client.print("Hello from ESP32!");
-  //   connected = true;
-  // }
+  if (!connected) {
+    if (!client.connect(host, port)) {
+      Serial.println("Connection to host failed");
+      delay(100);
+      return;
+    }
+    Serial.println("Connected to server successful!");
+    client.print("Hello from ESP32!");
+    connected = true;
+  }
 
   // Checks if there is any data on the UART Vision datastream
   if (Serial1.available()) {
@@ -649,24 +648,26 @@ void loop() {
     position.y = 0;
   }
 
-  // Decision Making based on the Vision DataStream - while on autonomous mode
+  int wall = wall_checker(co_x, co_y); // Checks if there is a wall near the rover.
+
+  // Decision Making based on the Vision DataStream when autonomous
   if (VisionMsg[0]==1 & autonomous) {
+    // Converting Area and Object Detection data
     std::string area_bin = "";
+    std::string obj_bin = "";
 
     for (int i = 16; i < 32; i++)
       area_bin += std::to_string(VisionMsg[i]);    
     int area = std::stoi(area_bin, 0, 2);
+    for (int i = 1; i < 3; i++)
+      obj_bin += std::to_string(VisionMsg[i]);
+    int obj = std::stoi(obj_bin, 0, 2);
 
-    if (area > 42840) { // If the area is bigger than a certain threshold
-      std::string obj_bin = "";
+    if (area > 42840 && area < 48400 && obj != 6) { // If an alien is detected
       std::string xcoord_bin = "";
 
-      for (int i = 1; i < 3; i++)
-        obj_bin += std::to_string(VisionMsg[i]);
       for (int i = 4; i < 15; i++) 
         xcoord_bin += std::to_string(VisionMsg[i]);
-
-      int obj = std::stoi(obj_bin, 0, 2);
       int xcoord = std::stoi(xcoord_bin, 0, 2);
       
       switch (obj) { // TODO: send data accordingly.
@@ -690,42 +691,25 @@ void loop() {
       }
       if (xcoord > 320) { // If the alien is found on the right, TURN LEFT
         anticlockwise(60, 90);
-      } else { // If the alien is found on the right, TURN RIGHT
+      }
+      else { // If the alien is found on the right, TURN RIGHT
         clockwise(60, 90);
       }
     }
-
-    int wall = wall_checker(co_x, co_y);
-    
+    else if (area > 50000 && obj==6) { // If alien building is detected, TURN LEFT
+      anticlockwise(60, 90);
+    }
+  } else if (autonomous) { // Autonomous Driving without any detection. 
     if (wall==1 | wall==2 | wall==5 | wall==6) {
       anticlockwise(60, 90);
     }
     else if (wall==4 | wall==7 | wall==8) {
       clockwise(60, 90);
     }
-  }
-
-  // Checks if drive and command are ready for moving the rover
-  /*
-  if (drive_ready && command_ready) {
-    Serial.print("Sending command to drive: ");
-
-    for (int i = 0; i < 32; i++) {
-      Serial.write(Command[i]);
-      Serial2.write(Command[i]);
-      Command[i] = ' ';
+    else {
+      forward(80);
     }
-    Serial.println();
-    Serial2.write('\n');
-
-    drive_ready = false;
-    command_ready = false;
   }
-  */
-
-  // Checks if drive has a message for command
-  // if (drive_msg_ready) {
-  // Serial.print("Sending message to command: ");
 
   for (int i = 0; i < 32; i++) {
     Serial.write(DriveMsg[i]);
