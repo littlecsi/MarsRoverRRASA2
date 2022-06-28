@@ -19,7 +19,6 @@ const roverWidth = 21;
 var global_angle = 0;
 var currPos = [window.innerWidth/2 - roverWidth/2, window.innerHeight/2];
 var currPos_backend = [0,0];
-var roverPath = [];
 var detectionSet = [];
 
 function displayDetection(detection, pos, angle) {
@@ -71,29 +70,6 @@ function App() {
     });
   }, []);
   
-
-  //const [angleDistanceSet, setAngleDistance] = useState([0,0]);
-  useEffect(() => {
-    Socket.on('AngleDistance', data => {
-      console.log("AngleDistance from server: %s", data);
-      //setAngleDistance(data);
-      paths(data, "grey");
-      if(currPos[0] < -arenaX) {
-        arenaX = arenaX - currPos[0] + 100;
-        arenaWidth = arenaWidth - currPos[0] + 100;
-      } else if(currPos[0] > arenaWidth + arenaX) {
-        arenaWidth = currPos[0] + 100;
-      }
-      if(currPos[1] < -arenaY) {
-        arenaY = arenaY - currPos[1] + 100;
-        arenaHeight = arenaHeight - currPos[1] + 100;
-      } else if(currPos[1] > arenaHeight + arenaY) {
-        arenaHeight = currPos[1] + 100;
-      }
-      //this.setState({});
-    })
-  }, []);
-
   const [detection, setDetection] = useState(["unknown",0]);
   useEffect(() => {
     Socket.on("Detection", data => {

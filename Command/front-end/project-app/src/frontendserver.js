@@ -10,7 +10,6 @@ var viewReceived = false;
 function createMap(step, view) {
 }
 
-
 function dataProccessing(data) {  
     const step = 25;
     var numberOfDetections = 0;
